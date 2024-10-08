@@ -1,75 +1,107 @@
-import express, { Request, Response } from "express";
+import dotenv from "dotenv";
 
-import {
-  Boat,
-  BoatDeleteRequest,
+dotenv.config();
+
+import express, { type Request, type Response } from "express";
+
+import type {
   BoatGetDetailRequest,
   BoatGetDetailResponse,
-  BoatPostRequest,
-  BoatPostResponse,
+  BoatCreateRequest,
+  BoatCreateResponse,
   BoatUpdateRequest,
   BoatUpdateResponse,
-} from "./types/types";
+  BoatDeleteRequest,
+  BoatDeleteResponse,
+} from "./interfaces.js";
+import type { Boat } from "./types.js";
+import { createClient } from "@libsql/client";
+import { drizzle } from "drizzle-orm/libsql";
+import * as schema from "./schema.js";
+import { eq } from "drizzle-orm/sqlite-core/expressions";
 
-const app = express();
+const dbClient = createClient({
+  url: process.env.DATABASE_URL || "file:local.db",
+});
+const db = drizzle(dbClient, { schema });
 const PORT = process.env.PORT || 3000;
 
+const app = express();
 app.use(express.json()); // Middleware to parse JSON request bodies
 
-let id = 0;
-const boats: Boat[] = [];
-
 // CREATE
-app.post("/boats", (req: BoatPostRequest, res: BoatPostResponse) => {
+app.post("/boats", async (req: BoatCreateRequest, res: BoatCreateResponse) => {
   if (req.body) {
-    const newBoat = { ...(req.body as Boat), id: id }; // Assume the new item is sent in the request body
-    boats.push(newBoat);
-    res.status(201).json(newBoat);
-    id++;
+    const newBoat = req.body as Boat; // Assume the new item is sent in the request body
+    const result = await db.insert(schema.boats).values(newBoat).returning();
+    res.status(201).json(result);
   } else {
     res.status(400).json({ message: "Missing request body" });
   }
 });
 
 // READ (Get all boats)
-app.get("/boats", (req: Request, res: Response) => {
+app.get("/boats", async (req: Request, res: Response) => {
+  const boats = await db.select().from(schema.boats);
   res.json(boats);
 });
 
 // READ (Get a single item by ID)
 app.get(
   "/boats/:id",
-  (req: BoatGetDetailRequest, res: BoatGetDetailResponse) => {
-    const item = boats.find((i) => i.id === parseInt(req.params.id));
+  async (req: BoatGetDetailRequest, res: BoatGetDetailResponse) => {
+    const id = parseInt(req.params.id);
+    const item = await db.query.boats.findFirst({
+      where: eq(schema.boats.id, id),
+    });
     if (!item) {
-      res.status(404).json({ message: "Item not found" });
+      res.status(404).json({ message: "Boat not found" });
       return;
     }
     res.json(item);
-  }
+  },
 );
 
 // UPDATE
-app.put("/boats/:id", (req: BoatUpdateRequest, res: BoatUpdateResponse) => {
-  const itemIndex = boats.findIndex((i) => i.id === parseInt(req.params.id));
-  if (itemIndex === -1) {
-    res.status(404).json({ message: "Item not found" });
-    return;
-  }
-  boats[itemIndex] = { ...boats[itemIndex], ...req.body }; // Update the item
-  res.json(boats[itemIndex]);
-});
+app.put(
+  "/boats/:id",
+  async (req: BoatUpdateRequest, res: BoatUpdateResponse) => {
+    const newBoat = req.body as Boat;
+    const id = parseInt(req.params.id);
+    const result = await db.query.boats.findFirst({
+      where: eq(schema.boats.id, id),
+    });
+    if (!result) {
+      res.status(404).json({ message: "Boat not found" });
+      return;
+    } else {
+      const dbResult = await db
+        .update(schema.boats)
+        .set(newBoat)
+        .where(eq(schema.boats.id, id))
+        .returning();
+      res.json(dbResult);
+    }
+  },
+);
 
 // DELETE
-app.delete("/boats/:id", (req: BoatDeleteRequest, res: Response) => {
-  const itemIndex = boats.findIndex((i) => i.id === parseInt(req.params.id));
-  if (itemIndex === -1) {
-    res.status(404).json({ message: "Item not found" });
-    return;
-  }
-  boats.splice(itemIndex, 1); // Remove the item from the array
-  res.status(204);
-});
+app.delete(
+  "/boats/:id",
+  async (req: BoatDeleteRequest, res: BoatDeleteResponse) => {
+    const id = parseInt(req.params.id);
+    const result = await db.query.boats.findFirst({
+      where: eq(schema.boats.id, id),
+    });
+    if (!result) {
+      res.status(404).json({ message: "Boat not found" });
+      return;
+    } else {
+      await db.delete(schema.boats).where(eq(schema.boats.id, id)).returning();
+      res.status(204);
+    }
+  },
+);
 
 // Start the server
 app.listen(PORT, () => {
