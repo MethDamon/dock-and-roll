@@ -1,15 +1,14 @@
-import express, { Request, Response } from "express";
-
-import {
+import express, { type Request, type Response } from "express";
+import type {
   Boat,
-  BoatDeleteRequest,
-  BoatGetDetailRequest,
-  BoatGetDetailResponse,
   BoatPostRequest,
   BoatPostResponse,
+  BoatGetDetailRequest,
+  BoatGetDetailResponse,
   BoatUpdateRequest,
   BoatUpdateResponse,
-} from "./types/types";
+  BoatDeleteRequest,
+} from "./types.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
