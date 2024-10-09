@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import express, { type Request, type Response } from "express";
+import { clerkMiddleware, requireAuth } from "@clerk/express";
 
 import type {
   BoatGetDetailRequest,
@@ -28,17 +29,22 @@ const PORT = process.env.PORT || 3000;
 
 const app = express();
 app.use(express.json()); // Middleware to parse JSON request bodies
+app.use(clerkMiddleware());
 
 // CREATE
-app.post("/boats", async (req: BoatCreateRequest, res: BoatCreateResponse) => {
-  if (req.body) {
-    const newBoat = req.body as Boat; // Assume the new item is sent in the request body
-    const result = await db.insert(schema.boats).values(newBoat).returning();
-    res.status(201).json(result);
-  } else {
-    res.status(400).json({ message: "Missing request body" });
+app.post(
+  "/boats",
+  requireAuth(),
+  async (req: BoatCreateRequest, res: BoatCreateResponse) => {
+    if (req.body) {
+      const newBoat = req.body as Boat; // Assume the new item is sent in the request body
+      const result = await db.insert(schema.boats).values(newBoat).returning();
+      res.status(201).json(result);
+    } else {
+      res.status(400).json({ message: "Missing request body" });
+    }
   }
-});
+);
 
 // READ (Get all boats)
 app.get("/boats", async (req: Request, res: Response) => {
@@ -59,7 +65,7 @@ app.get(
       return;
     }
     res.json(item);
-  },
+  }
 );
 
 // UPDATE
@@ -82,7 +88,7 @@ app.put(
         .returning();
       res.json(dbResult);
     }
-  },
+  }
 );
 
 // DELETE
@@ -100,7 +106,7 @@ app.delete(
       await db.delete(schema.boats).where(eq(schema.boats.id, id)).returning();
       res.status(204);
     }
-  },
+  }
 );
 
 // Start the server

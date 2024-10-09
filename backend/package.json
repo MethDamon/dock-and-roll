@@ -36,6 +36,7 @@
     "typescript-eslint": "^8.8.1"
   },
   "dependencies": {
+    "@clerk/express": "^1.2.1",
     "@libsql/client": "^0.14.0",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.34.1",
