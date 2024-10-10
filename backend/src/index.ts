@@ -43,7 +43,7 @@ app.post(
   ClerkExpressWithAuth(),
   async (
     req: WithAuthProp<TypedRequest<Boat>>,
-    res: TypedResponse<Boat[] | Error>,
+    res: TypedResponse<Boat[] | Error>
   ) => {
     if (req.body) {
       const newBoat = req.body as Boat; // Assume the new item is sent in the request body
@@ -52,7 +52,7 @@ app.post(
     } else {
       res.status(400).json({ message: "Missing request body" });
     }
-  },
+  }
 );
 
 // READ (Get all boats)
@@ -60,9 +60,11 @@ app.get(
   "/boats",
   ClerkExpressRequireAuth(),
   async (req: RequireAuthProp<Request>, res: TypedResponse<Boat[]>) => {
-    const boats = await db.select().from(schema.boats);
+    const boats = await db.query.boats.findMany({
+      where: eq(schema.boats.userId, req.auth.userId),
+    });
     res.json(boats);
-  },
+  }
 );
 
 // READ (Get a single item by ID)
@@ -84,7 +86,7 @@ app.get(
       }
       res.json(item);
     }
-  },
+  }
 );
 
 // UPDATE
@@ -113,7 +115,7 @@ app.put(
         res.json(dbResult);
       }
     }
-  },
+  }
 );
 
 // DELETE
@@ -140,7 +142,7 @@ app.delete(
         res.status(204);
       }
     }
-  },
+  }
 );
 
 const errorHandler: ErrorRequestHandler = (err, _, res, next) => {
