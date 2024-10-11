@@ -2,7 +2,6 @@ import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -10,19 +9,39 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Boat } from '@/types';
 import { useAuth } from '@clerk/clerk-react';
-import { EditIcon, PlusCircleIcon, TrashIcon } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { useEffect, useState } from 'react';
-import {} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
+import {
+  AlertTriangleIcon,
+  ArrowLeftIcon,
+  CrossIcon,
+  EditIcon,
+  ExternalLinkIcon,
+  MessageCircleWarningIcon,
+} from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export const BoatsDetailPage = () => {
   const { getToken } = useAuth();
   const { id } = useParams();
   const [boat, setBoat] = useState<Boat | null>(null);
+  const navigate = useNavigate();
+  const [notFound, setNotFound] = useState(false);
   useEffect(() => {
     const fetchBoat = async () => {
       const token = await getToken();
-      console.log(id);
       const response = await fetch(`http://localhost:3000/boats/${id}`, {
         headers: {
           Authorization: 'Bearer ' + token,
@@ -31,12 +50,40 @@ export const BoatsDetailPage = () => {
       if (response.ok) {
         const boat = await response.json();
         setBoat(boat);
+      } else if (response.status === 404) {
+        setNotFound(true);
       }
     };
     fetchBoat();
   }, [getToken, id]);
 
-  return (
+  const deleteBoat = async () => {
+    const token = await getToken();
+    const response = await fetch(`http://localhost:3000/boats/${id}`, {
+      headers: {
+        Authorization: 'Bearer ' + token,
+      },
+      method: 'DELETE',
+    });
+    if (response.ok) {
+      navigate('/');
+    }
+  };
+
+  if (notFound) {
+    return (
+      <div className="mt-4 flex-col flex gap-2">
+        <span className="flex items-center gap-1">
+          <AlertTriangleIcon className="h-3.5 w-3.5 stroke-red-500" />
+          <span>Boat was not found</span>
+        </span>
+        <Link className="underline flex items-center gap-1" to={'/'}>
+          <ArrowLeftIcon className="h-3.5 w-3.5" />
+          Return home
+        </Link>
+      </div>
+    );
+  } else {
     <Card>
       <CardHeader>
         <CardTitle className="text-xl font-bold">{boat?.name}</CardTitle>
@@ -72,15 +119,42 @@ export const BoatsDetailPage = () => {
         </div>
       </CardContent>
       <CardFooter className="flex ml-auto justify-end gap-4">
+        <AlertDialog>
+          <AlertDialogTrigger>
+            <Button
+              size="sm"
+              className="h-8 ml-auto gap-1"
+              variant="destructive"
+            >
+              <EditIcon className="h-3.5 w-3.5" />
+              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                Delete
+              </span>
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{`Are you absolutely sure you want to delete ${boat?.name}?`}</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete this
+                boat from your account.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={() => deleteBoat()}>
+                Yes, Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
         <Button size="sm" className="h-8 gap-1">
           <EditIcon className="h-3.5 w-3.5" />
-          <span>Edit</span>
-        </Button>
-        <Button size="sm" className="h-8 gap-1" variant="destructive">
-          <TrashIcon className="h-3.5 w-3.5" />
-          <span>Delete</span>
+          <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+            Edit
+          </span>
         </Button>
       </CardFooter>
-    </Card>
-  );
+    </Card>;
+  }
 };
