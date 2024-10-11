@@ -14,6 +14,7 @@ import {
   TableCell,
   Table,
 } from '@/components/ui/table';
+import useRandomBoatImage from '@/lib/hooks';
 import { Boat } from '@/types';
 import {
   DropdownMenu,
@@ -29,8 +30,12 @@ import {
   TooltipContent,
 } from '@radix-ui/react-tooltip';
 import { EditIcon, MoreHorizontal, Trash2Icon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const BoatsList = ({ boats }: { boats?: Boat[] }) => {
+  const navigate = useNavigate();
+  const randomBoatImageUrl = useRandomBoatImage();
+  console.log(randomBoatImageUrl);
   return (
     <Card>
       <CardHeader className="mt-2 text-left">
@@ -47,20 +52,21 @@ export const BoatsList = ({ boats }: { boats?: Boat[] }) => {
                 </TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Description</TableHead>
-                <TableHead>
-                  <span className="sr-only">Actions</span>
-                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {boats?.map((boat) => (
-                <TableRow key={boat.id}>
+                <TableRow
+                  key={boat.id}
+                  className="cursor-pointer"
+                  onClick={() => navigate(`/boats/${boat.id}`)}
+                >
                   <TableCell className="hidden sm:table-cell">
                     <img
-                      alt="Product image"
+                      alt="Boat image"
                       className="aspect-square rounded-md object-cover"
                       height="64"
-                      src={boat.imageUrl || '/placeholder.svg'}
+                      src={'https://loremflickr.com/g/64/64/boat,dock/all'}
                       width="64"
                     />
                   </TableCell>
@@ -69,49 +75,6 @@ export const BoatsList = ({ boats }: { boats?: Boat[] }) => {
                   </TableCell>
                   <TableCell align="left" className="font-medium">
                     {boat.description}
-                  </TableCell>
-                  <TableCell align="right">
-                    <div className="w-full sm:hidden">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            aria-haspopup="true"
-                            size="icon"
-                            variant="ghost"
-                          >
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Toggle menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
-                          <DropdownMenuItem>Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                    <div className="max-sm:hidden flex">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="ghost">
-                              <EditIcon className="h-5 w-5" />
-                              <span className="sr-only">Edit</span>
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent side="top">Edit</TooltipContent>
-                        </Tooltip>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="ghost">
-                              <Trash2Icon className="h-5 w-5 stroke-red-500" />
-                              <span className="sr-only">Delete</span>
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent side="top">Delete</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
                   </TableCell>
                 </TableRow>
               ))}
