@@ -66,7 +66,7 @@ export const BoatsList = ({ boats }: { boats?: Boat[] }) => {
                       alt="Boat image"
                       className="aspect-square rounded-md object-cover"
                       height="64"
-                      src={'https://loremflickr.com/g/64/64/boat,dock/all'}
+                      src={boat.imageUrl}
                       width="64"
                     />
                   </TableCell>

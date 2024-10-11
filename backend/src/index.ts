@@ -47,7 +47,13 @@ app.post(
     res: TypedResponse<Boat[] | Error>
   ) => {
     if (req.body) {
-      const newBoat = req.body as Boat; // Assume the new item is sent in the request body
+      const newBoat: Boat = {
+        userId: req.auth.userId,
+        name: req.body.name,
+        description: req.body.description,
+        imageUrl: req.body.imageUrl,
+      }; // Assume the new item is sent in the request body
+      console.log(newBoat);
       const result = await db.insert(schema.boats).values(newBoat).returning();
       res.status(201).json(result);
     } else {
