@@ -52,8 +52,7 @@ app.post(
         name: req.body.name,
         description: req.body.description,
         imageUrl: req.body.imageUrl,
-      }; // Assume the new item is sent in the request body
-      console.log(newBoat);
+      };
       const result = await db.insert(schema.boats).values(newBoat).returning();
       res.status(201).json(result);
     } else {
@@ -108,7 +107,6 @@ app.put(
   "/boats/:id(\\d+)",
   ClerkExpressRequireAuth(),
   async (req: RequireAuthProp<Request>, res: TypedResponse<Boat[] | Error>) => {
-    const newBoat = req.body as Boat;
     if (!req.params.id) {
       res.status(400).json({ message: "No id provided" });
       return;
@@ -121,6 +119,12 @@ app.put(
         res.status(404).json({ message: "Boat not found" });
         return;
       } else {
+        const newBoat: Boat = {
+          userId: req.auth.userId,
+          name: req.body.name,
+          description: req.body.description,
+          imageUrl: req.body.imageUrl,
+        };
         const dbResult = await db
           .update(schema.boats)
           .set(newBoat)
