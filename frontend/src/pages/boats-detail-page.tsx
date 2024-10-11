@@ -52,6 +52,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 export const BoatsDetailPage = () => {
   const { getToken } = useAuth();
   const { id } = useParams();
@@ -61,7 +63,7 @@ export const BoatsDetailPage = () => {
 
   const fetchBoat = useCallback(async () => {
     const token = await getToken();
-    const response = await fetch(`http://localhost:3000/boats/${id}`, {
+    const response = await fetch(`${BACKEND_URL}/boats/${id}`, {
       headers: {
         Authorization: 'Bearer ' + token,
       },
@@ -80,7 +82,7 @@ export const BoatsDetailPage = () => {
 
   const deleteBoat = async () => {
     const token = await getToken();
-    const response = await fetch(`http://localhost:3000/boats/${id}`, {
+    const response = await fetch(`${BACKEND_URL}/boats/${id}`, {
       headers: {
         Authorization: 'Bearer ' + token,
       },
@@ -95,7 +97,7 @@ export const BoatsDetailPage = () => {
   const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (data) => {
     console.log(data);
     const token = await getToken();
-    const response = await fetch(`http://localhost:3000/boats/${id}`, {
+    const response = await fetch(`${BACKEND_URL}/boats/${id}`, {
       headers: {
         Authorization: 'Bearer ' + token,
         'Content-Type': 'application/json',

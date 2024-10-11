@@ -7,7 +7,6 @@ import { Boat } from '../types';
 import { useAuth } from '@clerk/clerk-react';
 import {
   DialogHeader,
-  DialogFooter,
   Dialog,
   DialogTrigger,
   DialogDescription,
@@ -22,20 +21,22 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 export const BoatsOverviewPage = () => {
   const [boats, setBoats] = useState<Boat[]>([]);
   const { getToken } = useAuth();
 
   const fetchBoats = useCallback(async () => {
     const token = await getToken();
-    const response = await fetch('http://localhost:3000/boats', {
+    const response = await fetch(`${BACKEND_URL}/boats`, {
       headers: {
         Authorization: 'Bearer ' + token,
       },
@@ -69,7 +70,7 @@ export const BoatsOverviewPage = () => {
   const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (data) => {
     const token = await getToken();
     console.log(data);
-    const response = await fetch('http://localhost:3000/boats', {
+    const response = await fetch(`${BACKEND_URL}/boats`, {
       headers: {
         Authorization: 'Bearer ' + token,
         'Content-Type': 'application/json',
