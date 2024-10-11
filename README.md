@@ -1,6 +1,6 @@
 # Dock & Roll
 
-## How to run
+## How to run locally
 
 ### Frontend
 
@@ -12,10 +12,9 @@ VITE_BACKEND_URL=http://localhost:3000
 ```
 
 Run:
-
-`cd frontend`
-`npm i`
-`npm run dev`
+1. `cd frontend`
+2.  `npm i`
+3.  `npm run dev`
 
 ### Backend
 #### Env variables
@@ -28,6 +27,6 @@ CLERK_SECRET_KEY=sk_test_KKPMcLAtDj9DnbVsVXyYOXmDaGNnUm4wX08RN1Qsjf
 ```
 
 Run:
-`npm i`
-`npx drizzle-kit push` (Push schema to database)
-`npm run dev`
+1. `npm i`
+2. `npx drizzle-kit push` (Push schema to database)
+3. `npm run dev`
