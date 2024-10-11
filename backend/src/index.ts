@@ -9,7 +9,7 @@ import type { Boat, Error } from "./types.js";
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 import * as schema from "./schema.js";
-import { eq } from "drizzle-orm/sqlite-core/expressions";
+import { and, eq } from "drizzle-orm/sqlite-core/expressions";
 import {
   ClerkExpressRequireAuth,
   ClerkExpressWithAuth,
@@ -18,6 +18,7 @@ import {
   type WithAuthProp,
 } from "@clerk/clerk-sdk-node";
 import type { TypedRequest, TypedResponse } from "./interfaces.js";
+import { STATUS_CODES } from "http";
 
 const dbClient = createClient({
   url: process.env.DATABASE_URL || "file:local.db",
@@ -142,11 +143,12 @@ app.delete(
         res.status(404).json({ message: "Boat not found" });
         return;
       } else {
-        await db
-          .delete(schema.boats)
-          .where(eq(schema.boats.id, id))
-          .returning();
-        res.status(204);
+        if (result.userId !== req.auth.userId) {
+          res.status(403).json({ message: "Unauthorized" });
+        } else {
+          await db.delete(schema.boats).where(eq(schema.boats.id, id));
+          res.status(204).send();
+        }
       }
     }
   }
