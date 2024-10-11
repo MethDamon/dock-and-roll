@@ -60,6 +60,7 @@ app.get(
   "/boats",
   ClerkExpressRequireAuth(),
   async (req: RequireAuthProp<Request>, res: TypedResponse<Boat[]>) => {
+    console.log(req.auth);
     const boats = await db.query.boats.findMany({
       where: eq(schema.boats.userId, req.auth.userId),
     });
@@ -69,29 +70,35 @@ app.get(
 
 // READ (Get a single item by ID)
 app.get(
-  "/boats/:id",
+  "/boats/:id(\\d+)/",
   ClerkExpressRequireAuth(),
   async (req: RequireAuthProp<Request>, res: TypedResponse<Boat | Error>) => {
+    console.log("called");
     if (!req.params.id) {
       res.status(400).json({ message: "No id provided" });
       return;
     } else {
       const id = parseInt(req.params.id);
+      console.log(id);
       const item = await db.query.boats.findFirst({
         where: eq(schema.boats.id, id),
       });
       if (!item) {
         res.status(404).json({ message: "Boat not found" });
         return;
+      } else if (item.userId !== req.auth.userId) {
+        res.status(403).json({ message: "Unauthorized" });
+        return;
+      } else {
+        res.json(item);
       }
-      res.json(item);
     }
   }
 );
 
 // UPDATE
 app.put(
-  "/boats/:id",
+  "/boats/:id(\\d+)",
   ClerkExpressRequireAuth(),
   async (req: RequireAuthProp<Request>, res: TypedResponse<Boat[] | Error>) => {
     const newBoat = req.body as Boat;
@@ -120,7 +127,7 @@ app.put(
 
 // DELETE
 app.delete(
-  "/boats/:id",
+  "/boats/:id(\\d+)",
   ClerkExpressRequireAuth(),
   async (req: RequireAuthProp<Request>, res: TypedResponse<Boat[] | Error>) => {
     if (!req.params.id) {
