@@ -131,7 +131,7 @@ export const BoatsOverviewPage = () => {
                   </FormItem>
                 )}
               />
-              <DialogClose type="submit" disabled={form.formState.errors}>
+              <DialogClose type="submit" disabled={!form.formState.isValid}>
                 <Button>Submit</Button>
               </DialogClose>
             </form>
