@@ -27,6 +27,7 @@ CLERK_SECRET_KEY=sk_test_KKPMcLAtDj9DnbVsVXyYOXmDaGNnUm4wX08RN1Qsjf
 ```
 
 Run:
-1. `npm i`
-2. `npx drizzle-kit push` (Push schema to database)
-3. `npm run dev`
+1. `cd backend`
+2. `npm i`
+3. `npx drizzle-kit push` (Push schema to database)
+4. `npm run dev`
