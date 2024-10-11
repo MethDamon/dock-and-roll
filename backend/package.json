@@ -9,7 +9,7 @@
     "format-check": "prettier --check './**/*.{js,jsx,ts,json}'",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
-    "build": "tsc",
+    "build": "tsc --output dist",
     "start": "node dist/index.js",
     "dev": "node --loader=ts-node/esm --env-file=.env.local --watch src/index.ts",
     "db:studio": "drizzle-kit studio"
