@@ -23,14 +23,7 @@ import {
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
-import {
-  AlertTriangleIcon,
-  ArrowLeftIcon,
-  CrossIcon,
-  EditIcon,
-  ExternalLinkIcon,
-  MessageCircleWarningIcon,
-} from 'lucide-react';
+import { AlertTriangleIcon, ArrowLeftIcon, EditIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export const BoatsDetailPage = () => {
@@ -65,6 +58,7 @@ export const BoatsDetailPage = () => {
       },
       method: 'DELETE',
     });
+    console.log(response);
     if (response.ok) {
       navigate('/');
     }
@@ -84,77 +78,79 @@ export const BoatsDetailPage = () => {
       </div>
     );
   } else {
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-xl font-bold">{boat?.name}</CardTitle>
-      </CardHeader>
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl font-bold">{boat?.name}</CardTitle>
+        </CardHeader>
 
-      <CardContent className="flex flex-row items-start mt-4 gap-4">
-        <div className="w-1/3 h-[300px]">
-          {boat ? (
-            <img
-              width={300}
-              height={300}
-              src={boat.imageUrl}
-              alt="Boat image"
-              className="rounded-lg object-contain"
-            />
-          ) : (
-            <Skeleton className="w-[300px] h-[300px] rounded-md" />
-          )}
-        </div>
+        <CardContent className="flex flex-row items-start mt-4 gap-4">
+          <div className="w-1/3 h-[300px]">
+            {boat ? (
+              <img
+                width={300}
+                height={300}
+                src={boat.imageUrl}
+                alt="Boat image"
+                className="rounded-lg object-contain"
+              />
+            ) : (
+              <Skeleton className="w-[300px] h-[300px] rounded-md" />
+            )}
+          </div>
 
-        <div className="w-2/3 flex items-start">
-          {boat ? (
-            <dl>
-              <dt className="mb-2 font-semibold">Name</dt>
-              <dd className="mb-2 font-light">{boat?.name}</dd>
+          <div className="w-2/3 flex items-start">
+            {boat ? (
+              <dl>
+                <dt className="mb-2 font-semibold">Name</dt>
+                <dd className="mb-2 font-light">{boat?.name}</dd>
 
-              <dt className="mb-2 font-semibold">Description</dt>
-              <dd className="mb-2 font-light">{boat?.description}</dd>
-            </dl>
-          ) : (
-            <Skeleton className="w-full h-[300px]" />
-          )}
-        </div>
-      </CardContent>
-      <CardFooter className="flex ml-auto justify-end gap-4">
-        <AlertDialog>
-          <AlertDialogTrigger>
-            <Button
-              size="sm"
-              className="h-8 ml-auto gap-1"
-              variant="destructive"
-            >
-              <EditIcon className="h-3.5 w-3.5" />
-              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                Delete
-              </span>
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>{`Are you absolutely sure you want to delete ${boat?.name}?`}</AlertDialogTitle>
-              <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete this
-                boat from your account.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={() => deleteBoat()}>
-                Yes, Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-        <Button size="sm" className="h-8 gap-1">
-          <EditIcon className="h-3.5 w-3.5" />
-          <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-            Edit
-          </span>
-        </Button>
-      </CardFooter>
-    </Card>;
+                <dt className="mb-2 font-semibold">Description</dt>
+                <dd className="mb-2 font-light">{boat?.description}</dd>
+              </dl>
+            ) : (
+              <Skeleton className="w-full h-[300px]" />
+            )}
+          </div>
+        </CardContent>
+        <CardFooter className="flex ml-auto justify-end gap-4">
+          <AlertDialog>
+            <AlertDialogTrigger>
+              <Button
+                size="sm"
+                className="h-8 ml-auto gap-1"
+                variant="destructive"
+              >
+                <EditIcon className="h-3.5 w-3.5" />
+                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                  Delete
+                </span>
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{`Are you absolutely sure you want to delete ${boat?.name}?`}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  this boat from your account.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => deleteBoat()}>
+                  Yes, Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+          <Button size="sm" className="h-8 gap-1">
+            <EditIcon className="h-3.5 w-3.5" />
+            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+              Edit
+            </span>
+          </Button>
+        </CardFooter>
+      </Card>
+    );
   }
 };
