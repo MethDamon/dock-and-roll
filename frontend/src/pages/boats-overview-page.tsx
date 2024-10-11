@@ -1,15 +1,12 @@
 import { PlusCircleIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { BoatsList } from './pages/boats-list';
+import { BoatsList } from '../components/boats-list';
 import { useEffect, useState } from 'react';
-import { Boat } from './types';
+import { Boat } from '../types';
 import { useAuth } from '@clerk/clerk-react';
 
-export const description =
-  'An boat management dashboard with a sidebar navigation. The sidebar has icon navigation. The content area has a breadcrumb. It displays a list of boats in a table with actions.';
-
-export const Boats = () => {
+export const BoatsOverviewPage = () => {
   const [boats, setBoats] = useState<Boat[]>([]);
   const { getToken } = useAuth();
   useEffect(() => {
