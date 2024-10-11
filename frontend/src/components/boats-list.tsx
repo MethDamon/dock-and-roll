@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button';
 import {
   Card,
   CardHeader,
@@ -16,20 +15,6 @@ import {
 } from '@/components/ui/table';
 import useRandomBoatImage from '@/lib/hooks';
 import { Boat } from '@/types';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuItem,
-} from '@radix-ui/react-dropdown-menu';
-import {
-  TooltipProvider,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from '@radix-ui/react-tooltip';
-import { EditIcon, MoreHorizontal, Trash2Icon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const BoatsList = ({ boats }: { boats?: Boat[] }) => {

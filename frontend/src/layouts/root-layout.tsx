@@ -1,4 +1,3 @@
-import { Boats } from '@/pages/boats-overview-page';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { Header } from '@/components/header';
 import { SideNavigation } from '@/components/side-navigation';

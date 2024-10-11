@@ -15,6 +15,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '@clerk/clerk-react';
 import { DialogClose } from './ui/dialog';
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 export const BoatForm = () => {
   const { getToken } = useAuth();
   const formSchema = z.object({
@@ -35,7 +37,7 @@ export const BoatForm = () => {
 
   const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (data) => {
     const token = await getToken();
-    await fetch('http://localhost:3000/boats', {
+    await fetch(`${BACKEND_URL}/boats`, {
       headers: {
         Authorization: 'Bearer ' + token,
         'Content-Type': 'application/json',
